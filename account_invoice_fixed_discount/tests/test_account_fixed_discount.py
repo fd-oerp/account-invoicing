@@ -144,3 +144,14 @@ class TestInvoiceFixedDiscount(TransactionCase):
             price_unit=10,
             currency=1,
         )
+
+    def test_05_fixed_discount_without_price(self):
+        """Tests fixed discount with 0 unit price."""
+        with Form(self.invoice) as invoice_form:
+            with invoice_form.invoice_line_ids.edit(0) as line:
+                line.quantity = 1.0
+                line.price_unit = 0.0
+                line.discount_fixed = 50.0
+        self.assertEqual(self.invoice.invoice_line_ids.discount, 0.0)
+        self.assertEqual(self.invoice.invoice_line_ids.price_subtotal, 0.0)
+        self.assertEqual(self.invoice.amount_total, 0.0)
